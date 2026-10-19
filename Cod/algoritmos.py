@@ -123,7 +123,7 @@ def ac3(variables):
             if not vi.getDominio():
                 return False
 
-            #el dominio de vi ha cambiado: hay que revisar los arcos (vk, vi)
+            #el dominio de vi ha cambiado, por lo que hay que revisar los arcos (vk, vi)
             for (vk, posI2, posK) in vi.getRestricciones():
                 if vk is not vj:
                     nuevo = (vk, vi, posK, posI2)
