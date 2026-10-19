@@ -147,7 +147,7 @@ def revisar(vi, vj, posI, posJ):
         soportes = letras.get(a[posI], 0)
 
         #el propio valor "a" en vj no vale como soporte, ya que no valen 
-        #palabras repetidas. solo hace falta comprobarlo si "a" es el único candidato
+        #palabras repetidas. Solo hace falta comprobarlo si "a" es el único candidato
         if soportes == 1 and len(a) > 1 and len(a) == vj.getLongitud() and a[posJ] == a[posI]:
             if setJ is None:
                 setJ = set(dominioJ)
