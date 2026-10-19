@@ -1,14 +1,10 @@
+from collections import deque
+
 #########################################################################
 # BACKTRACKING
 #########################################################################
 
 def backtracking(variables, k=0):
-
-    #limpiar previamente la lista de variables si se ejecutan dos algoritmos
-    #seguidos, desasignando todos los valores y restaurando todas las podas
-    if k == 0:
-        limpiar(variables) 
-
     if k == len(variables):
         return True
 
@@ -45,13 +41,7 @@ def consistente(variable, valor, variables, k):
 # FORWARD CHECKING
 #########################################################################
 
-def forward_checking(variables, k=0):
-
-    #limpiar previamente la lista de variables si se ejecutan dos algoritmos
-    #seguidos, desasignando todos los valores y restaurando todas las podas
-    if k == 0:
-        limpiar(variables)        
-
+def forward_checking(variables, k=0):      
     if k == len(variables):
         return True
 
@@ -109,6 +99,68 @@ def es_consistente(vi, a, vj, b):
 
     return True
 
+
+
+#########################################################################
+# AC3
+#########################################################################
+
+def ac3(variables):
+
+    #cola con todos los arcos (vi, vj, posición del cruce en vi, posición en vj)
+    cola = deque()
+    for vi in variables:
+        for (vj, posI, posJ) in vi.getRestricciones():
+            cola.append((vi, vj, posI, posJ))
+    enCola = set(cola)
+
+    while cola:
+        arco = cola.popleft()
+        enCola.discard(arco)
+        (vi, vj, posI, posJ) = arco
+
+        if revisar(vi, vj, posI, posJ):
+            if not vi.getDominio():
+                return False
+
+            #el dominio de vi ha cambiado: hay que revisar los arcos (vk, vi)
+            for (vk, posI2, posK) in vi.getRestricciones():
+                if vk is not vj:
+                    nuevo = (vk, vi, posK, posI2)
+                    if nuevo not in enCola:
+                        cola.append(nuevo)
+                        enCola.add(nuevo)
+
+    return True
+
+def revisar(vi, vj, posI, posJ):
+    dominioJ = vj.getDominio()
+
+    #cuántos valores de vj tiene cada letra en la celda de cruce
+    letras = {}
+    for b in dominioJ:
+        letras[b[posJ]] = letras.get(b[posJ], 0) + 1
+
+    setJ = None
+    nuevo = []
+    for a in vi.getDominio():
+        soportes = letras.get(a[posI], 0)
+
+        #el propio valor "a" en vj no vale como soporte, ya que no valen 
+        #palabras repetidas. solo hace falta comprobarlo si "a" es el único candidato
+        if soportes == 1 and len(a) > 1 and len(a) == vj.getLongitud() and a[posJ] == a[posI]:
+            if setJ is None:
+                setJ = set(dominioJ)
+            if a in setJ:
+                soportes = 0
+
+        if soportes > 0:
+            nuevo.append(a)
+
+    if len(nuevo) != len(vi.getDominio()):
+        vi.setDominio(nuevo)
+        return True
+    return False
 
 
 #########################################################################

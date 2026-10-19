@@ -9,7 +9,7 @@ import time
 import copy
 from tablero import *
 from variable import construyeVariables, imprimeVariables
-from algoritmos import backtracking, forward_checking, volcarSolucion
+from algoritmos import backtracking, forward_checking, volcarSolucion, limpiar, ac3
 
 GREY=(190, 190, 190)
 NEGRO=(100,100, 100)
@@ -148,7 +148,6 @@ def main():
     imprimeAlmacen(almacen)
     game_over=False
     tablero=Tablero(filas, cols)    
-    ac3=False
     variables = None #se reconstruye al editar el tablero; se conserva entre pulsaciones de botón
     while not game_over:
         for event in pygame.event.get():
@@ -161,6 +160,8 @@ def main():
                     print('BK')
                     if variables is None:
                         variables = construyeVariables(tablero, almacen)
+                    else:
+                        limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
                     res=backtracking(variables) #esta variable debe estar a falso si el problema no tiene solución
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")
@@ -170,6 +171,8 @@ def main():
                     print('FC') 
                     if variables is None:
                         variables = construyeVariables(tablero, almacen)
+                    else:
+                        limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
                     res=forward_checking(variables) #esta variable debe estar a falso si el problema no tiene solución
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")
@@ -179,8 +182,15 @@ def main():
                     print('AC3')
                     if variables is None:
                         variables = construyeVariables(tablero, almacen)
-                    print("VARIABLES CONSTRUIDAS A PARTIR DEL TABLERO:")
+                    else:
+                        limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
+                    print("DOMINIOS ANTES DEL AC3")
                     imprimeVariables(variables)
+                    res = ac3(variables)
+                    print("DOMINIOS DESPUES DEL AC3")
+                    imprimeVariables(variables)
+                    if res == False:
+                        MessageBox.showwarning("Alerta", "No hay solución")
                 elif inTablero(pos, filas, cols):
                     colDestino=pos[0]//(TAM+MARGEN)
                     filDestino=pos[1]//(TAM+MARGEN)                    
