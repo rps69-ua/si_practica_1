@@ -38,6 +38,62 @@ def consistente(variable, valor, variables, k):
 
 
 #########################################################################
+# BACKJUMPING
+#########################################################################
+
+def backjumping(variables):
+    exito, _ = backjumping_rec(variables, 0)
+    return exito
+
+#Devuelve (éxito, conjunto de variables pasadas responsables del fallo)
+def backjumping_rec(variables, k):
+    if k == len(variables):
+        return True, set()
+
+    variable = variables[k]
+    conflictos_k = set()
+
+    for valor in variable.getDominio():
+        variable.asignar(valor)
+
+        if consistente(variable, valor, variables, k):
+            exito, conflictos = backjumping_rec(variables, k+1)
+
+            if exito:
+                return True, set()
+
+            #si la variable no es responsable del fallo, se salta hacia atrás
+            if variable not in conflictos:
+                variable.desasignar()
+                return False, conflictos
+            else:
+                conflictos_k |= conflictos - {variable}
+        else:
+            conflictos_k |= variables_en_conflicto(variable, valor, variables, k)
+
+        variable.desasignar()
+
+    return False, conflictos_k | {variable}
+
+#Variables anteriores a "k" con las que el valor de "variable" es inconsistente
+def variables_en_conflicto(variable, valor, variables, k):
+    conflictos = set()
+
+    for (otra, posSelf, posOtra) in variable.getRestricciones():
+        if otra.estaAsignada():
+            if valor[posSelf] != otra.getValor()[posOtra]:
+                conflictos.add(otra)
+
+    if len(valor) > 1:
+        for otra in variables[:k]:
+            if otra.getValor() == valor:
+                conflictos.add(otra)
+
+    return conflictos
+
+
+
+#########################################################################
 # FORWARD CHECKING
 #########################################################################
 

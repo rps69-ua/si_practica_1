@@ -9,7 +9,7 @@ import time
 import copy
 from tablero import *
 from variable import construyeVariables, imprimeVariables
-from algoritmos import backtracking, forward_checking, volcarSolucion, limpiar, ac3
+from algoritmos import backtracking, forward_checking, volcarSolucion, limpiar, ac3, backjumping
 
 GREY=(190, 190, 190)
 NEGRO=(100,100, 100)
@@ -162,7 +162,7 @@ def main():
                         variables = construyeVariables(tablero, almacen)
                     else:
                         limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
-                    res=backtracking(variables) #esta variable debe estar a falso si el problema no tiene solución
+                    res=backjumping(variables) #esta variable debe estar a falso si el problema no tiene solución
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")
                     else:
