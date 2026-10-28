@@ -155,10 +155,6 @@ def construyeVariables(tablero, almacen):
 
     huecos = extraerHuecos(tablero)
 
-    #ordenar los huecos de modo que en la lista de variables las de
-    #longitud 1 estén al final, para mayor eficiencia en backtracking
-    huecos.sort(key=lambda hueco: hueco[3] == 1)
-
     for (tipo, fila, col, longitud) in huecos:
         v = Variable(nombre, tipo, fila, col, longitud)
         v.setDominio(calculaDominio(tablero, v, almacen))

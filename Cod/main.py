@@ -120,7 +120,7 @@ def main():
     if '--dic' in sys.argv:
         file = sys.argv[sys.argv.index("--dic") + 1]
     else:
-        file='d0.txt'    
+        file='d0.txt'
         
     anchoVentana=cols*(TAM+MARGEN)+MARGEN_DERECHO
     altoVentana= filas*(TAM+MARGEN)+2*MARGEN 
@@ -133,12 +133,18 @@ def main():
     if altoBoton>=65:
         altoBoton=65    
     
-    posBotBK=altoVentana//4-altoBoton//2
-    posBotFC=altoVentana//2-altoBoton//2
-    posBotAC3=(altoVentana//2+altoVentana)//2-altoBoton//2      
-    botBK=pygame.Rect(anchoVentana-95, posBotBK, 70, altoBoton)    
-    botFC=pygame.Rect(anchoVentana-95,posBotFC , 70, altoBoton)
+    altoBoton=altoVentana//6
+    if altoBoton>=65:
+        altoBoton=65
+
+    posBotBK =altoVentana*1//5-altoBoton//2
+    posBotFC =altoVentana*2//5-altoBoton//2
+    posBotAC3=altoVentana*3//5-altoBoton//2
+    posBotBJ =altoVentana*4//5-altoBoton//2
+    botBK =pygame.Rect(anchoVentana-95, posBotBK , 70, altoBoton)
+    botFC =pygame.Rect(anchoVentana-95, posBotFC , 70, altoBoton)
     botAC3=pygame.Rect(anchoVentana-95, posBotAC3, 70, altoBoton)
+    botBJ =pygame.Rect(anchoVentana-95, posBotBJ , 70, altoBoton)
 
     tamFuenteBot=int(altoBoton//1.5)    
     fuenteBot=pygame.font.Font(None, tamFuenteBot)
@@ -162,7 +168,18 @@ def main():
                         variables = construyeVariables(tablero, almacen)
                     else:
                         limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
-                    res=backjumping(variables) #esta variable debe estar a falso si el problema no tiene solución
+                    res=backtracking(variables)
+                    if res==False:
+                        MessageBox.showwarning("Alerta", "No hay solución")
+                    else:
+                        volcarSolucion(tablero, variables)
+                elif pulsaBoton(pos, botBJ):
+                    print('BJ')
+                    if variables is None:
+                        variables = construyeVariables(tablero, almacen)
+                    else:
+                        limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
+                    res=backjumping(variables) 
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")
                     else:
@@ -173,7 +190,7 @@ def main():
                         variables = construyeVariables(tablero, almacen)
                     else:
                         limpiar(variables) #limpiar podas y valores asignados de la ejecución anterior
-                    res=forward_checking(variables) #esta variable debe estar a falso si el problema no tiene solución
+                    res=forward_checking(variables)
                     if res==False:
                         MessageBox.showwarning("Alerta", "No hay solución")
                     else:
@@ -212,7 +229,8 @@ def main():
         #pintar botones           
         pintarBoton(screen, fuenteBot, botBK, "BK")
         pintarBoton(screen, fuenteBot, botFC, "FC")
-        pintarBoton(screen, fuenteBot, botAC3, "AC3")   
+        pintarBoton(screen, fuenteBot, botAC3, "AC3")
+        pintarBoton(screen, fuenteBot, botBJ, "BJ")
         #actualizar pantalla
         pygame.display.flip()
         reloj.tick(40)
